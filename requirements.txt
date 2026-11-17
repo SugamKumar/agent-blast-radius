@@ -1,0 +1,3 @@
+mcp>=2,<3   # only for --transport mcp
+anthropic   # only for --model anthropic
+pytest      # only for the tests

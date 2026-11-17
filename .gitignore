@@ -1,0 +1,6 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+my_payloads.json
+results/anthropic_*
