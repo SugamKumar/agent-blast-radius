@@ -17,6 +17,8 @@ Everything runs locally against mock servers, either as plain Python calls
 or as real MCP servers over local HTTP with bearer-token checks. No real
 accounts or data are involved.
 
+![Grid showing which harms a compromised agent can cause under each access configuration](docs/blast_radius.svg)
+
 ## How this relates to my insider-threat project
 
 This is the second half of a pair. The two projects ask different questions
@@ -322,6 +324,7 @@ lab/
   detections/      eight detection rules over the audit log
   detect.py        runs the rules, prints the rule matrix
 docs/THREAT_MODEL.md
+docs/make_chart.py   regenerates docs/blast_radius.svg from the results
 tests/test_lab.py
 .github/workflows/tests.yml
 ```

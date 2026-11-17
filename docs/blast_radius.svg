@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 772 456" width="772" height="456" role="img" aria-label="Grid showing which harms a compromised agent can cause under each access configuration">
+<rect width="772" height="456" rx="8" fill="#fcfcfb"/>
+<text x="24" y="36" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" fill="#1c1c1a" text-anchor="start" font-weight="600">What a compromised agent can do, by access configuration</text>
+<text x="24" y="58" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="start" font-weight="400">A scripted agent under the attacker&#x27;s control tries every route, in two orders.</text>
+<text x="384.0" y="88" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#6b6a64" text-anchor="middle" font-weight="600">Private data stolen</text>
+<line x1="268" y1="95" x2="500" y2="95" stroke="#e1e0d9" stroke-width="1"/>
+<text x="624.0" y="88" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#6b6a64" text-anchor="middle" font-weight="600">Records damaged</text>
+<line x1="508" y1="95" x2="740" y2="95" stroke="#e1e0d9" stroke-width="1"/>
+<text x="324.0" y="113" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#1c1c1a" text-anchor="middle" font-weight="400">Standard note</text>
+<text x="444.0" y="113" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#1c1c1a" text-anchor="middle" font-weight="400">Restricted note</text>
+<text x="564.0" y="113" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#1c1c1a" text-anchor="middle" font-weight="400">Issue closed</text>
+<text x="684.0" y="113" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#1c1c1a" text-anchor="middle" font-weight="400">Issue deleted</text>
+<text x="252" y="149.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#1c1c1a" text-anchor="end" font-weight="400">Over-broad scopes</text>
+<rect x="268" y="124" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="324.0" y="149.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ leaked</text>
+<rect x="388.5" y="124.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="444.0" y="149.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<rect x="508" y="124" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="564.0" y="149.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ closed</text>
+<rect x="628.5" y="124.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="684.0" y="149.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<text x="252" y="197.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#1c1c1a" text-anchor="end" font-weight="400">Personal access token</text>
+<rect x="268" y="172" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="324.0" y="197.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ leaked</text>
+<rect x="388" y="172" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="444.0" y="197.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ leaked</text>
+<rect x="508" y="172" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="564.0" y="197.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ closed</text>
+<rect x="628" y="172" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="684.0" y="197.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ deleted</text>
+<text x="252" y="245.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#1c1c1a" text-anchor="end" font-weight="400">Token passthrough (confused deputy)</text>
+<rect x="268" y="220" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="324.0" y="245.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ leaked</text>
+<rect x="388" y="220" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="444.0" y="245.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ leaked</text>
+<rect x="508" y="220" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="564.0" y="245.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ closed</text>
+<rect x="628.5" y="220.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="684.0" y="245.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<text x="252" y="293.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#1c1c1a" text-anchor="end" font-weight="400">Prompt-only defence</text>
+<rect x="268" y="268" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="324.0" y="293.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ leaked</text>
+<rect x="388.5" y="268.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="444.0" y="293.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<rect x="508" y="268" width="112" height="40" rx="4" fill="#d03b3b"/>
+<text x="564.0" y="293.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle" font-weight="600">✕ closed</text>
+<rect x="628.5" y="268.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="684.0" y="293.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<text x="252" y="341.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#1c1c1a" text-anchor="end" font-weight="400">Policy gateway only</text>
+<rect x="268.5" y="316.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="324.0" y="341.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<rect x="388.5" y="316.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="444.0" y="341.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<rect x="508.5" y="316.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="564.0" y="341.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<rect x="628.5" y="316.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="684.0" y="341.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<text x="252" y="389.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#1c1c1a" text-anchor="end" font-weight="400">Hardened (least privilege + gateway)</text>
+<rect x="268.5" y="364.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="324.0" y="389.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<rect x="388.5" y="364.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="444.0" y="389.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<rect x="508.5" y="364.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="564.0" y="389.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<rect x="628.5" y="364.5" width="111" height="39" rx="4" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="684.0" y="389.0" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6b6a64" text-anchor="middle" font-weight="400">blocked</text>
+<text x="24" y="440" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#6b6a64" text-anchor="start" font-weight="400">Shows what each configuration permits, not how often a real model is compromised.</text>
+</svg>
