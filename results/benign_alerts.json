@@ -1,0 +1,11 @@
+[
+  {
+    "rule": "R3_wildcard_or_non_expiring_token",
+    "severity": "medium",
+    "owasp": "ASI03",
+    "session": "personal_token:none:0",
+    "config": "personal_token",
+    "seq": 0,
+    "summary": "agent 'triage-agent' used a token with aud=*, expires=False, scope=['*']"
+  }
+]

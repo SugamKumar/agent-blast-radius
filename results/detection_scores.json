@@ -1,0 +1,79 @@
+{
+  "attack_sessions": 198,
+  "normal_sessions": 396,
+  "rows": [
+    {
+      "rule": "R1",
+      "attack_sessions_flagged": 32,
+      "normal_sessions_flagged": 0,
+      "precision": 1.0,
+      "recall": 0.162
+    },
+    {
+      "rule": "R2",
+      "attack_sessions_flagged": 66,
+      "normal_sessions_flagged": 0,
+      "precision": 1.0,
+      "recall": 0.333
+    },
+    {
+      "rule": "R3",
+      "attack_sessions_flagged": 48,
+      "normal_sessions_flagged": 96,
+      "precision": 0.333,
+      "recall": 0.242
+    },
+    {
+      "rule": "R4",
+      "attack_sessions_flagged": 43,
+      "normal_sessions_flagged": 28,
+      "precision": 0.606,
+      "recall": 0.217
+    },
+    {
+      "rule": "R5",
+      "attack_sessions_flagged": 57,
+      "normal_sessions_flagged": 0,
+      "precision": 1.0,
+      "recall": 0.288
+    },
+    {
+      "rule": "R6",
+      "attack_sessions_flagged": 68,
+      "normal_sessions_flagged": 0,
+      "precision": 1.0,
+      "recall": 0.343
+    },
+    {
+      "rule": "R7",
+      "attack_sessions_flagged": 44,
+      "normal_sessions_flagged": 0,
+      "precision": 1.0,
+      "recall": 0.222
+    },
+    {
+      "rule": "R8",
+      "attack_sessions_flagged": 132,
+      "normal_sessions_flagged": 0,
+      "precision": 1.0,
+      "recall": 0.667
+    },
+    {
+      "rule": "R1 at any severity",
+      "attack_sessions_flagged": 94,
+      "normal_sessions_flagged": 74,
+      "precision": 0.56,
+      "recall": 0.475
+    },
+    {
+      "rule": "Any rule except R3, R4",
+      "attack_sessions_flagged": 198,
+      "normal_sessions_flagged": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    }
+  ],
+  "harmful_attack_sessions": 106,
+  "harmful_and_missed": [],
+  "harmless_and_missed": 0
+}
