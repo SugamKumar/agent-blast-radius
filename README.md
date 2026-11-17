@@ -282,11 +282,12 @@ refuses a non-read tool on any undeclared resource.
 
 ## Quick start
 
-Requires Python 3.10+. The in-process mode needs no packages beyond `pytest`
-for the tests. The MCP mode needs the `mcp` SDK, version 2.x.
+Requires Python 3.10+. The packages are PyJWT with `cryptography` for the
+tokens, the `mcp` SDK (2.x) for the MCP transport, and `pytest`.
 
 ```bash
-python -m pytest -q                                    # 26 offline tests
+pip install -r requirements.txt
+python -m pytest -q                                    # 32 offline tests
 python -m lab.run --model compromised                  # blast radius
 python -m lab.detect results/compromised_audit.jsonl   # alerts + rule matrix
 python -m lab.ablation                                 # one fix at a time + cost of defences
@@ -298,7 +299,6 @@ Through real MCP servers (same results, every hop is an authenticated HTTP
 request):
 
 ```bash
-pip install mcp
 python -m lab.run --model compromised --transport mcp
 python -m lab.ablation --transport mcp
 ```
@@ -307,7 +307,7 @@ python -m lab.ablation --transport mcp
 
 ```
 lab/
-  tokens.py        signed tokens (sub, act, aud, scope, exp) + toy authorization server
+  tokens.py        JWT access tokens (ES256), JWKS, authorization server with token exchange
   world.py         mock data, canary secrets, and the leak and tampering checks
   servers/         issue tracker and private notes servers, each validating tokens
   gateway.py       policy gateway: allowlist, resource limits, approval, data-flow rule
@@ -333,8 +333,12 @@ tests/test_lab.py
 
 - Every number comes from scripted agents. They show what the access setup
   permits and what the rules can see, not real-world rates.
-- The token model is a teaching model of OAuth-style tokens, not a real
-  OAuth 2.1 implementation.
+- Tokens are real signed JWTs (ES256, in the shape of RFC 9068), verified
+  against the authorization server's public keys, so a tool server can check
+  tokens but cannot create them. The tests cover tampered, unsigned,
+  algorithm-confusion and foreign-key tokens. The authorization server is
+  still an in-process object: no login, consent, discovery or client
+  registration.
 - With `--transport mcp` the servers are real MCP servers (Streamable HTTP)
   that require a bearer token, and audience validation uses the MCP SDK's
   own resource check. There is no OAuth authorization flow, discovery, or
@@ -348,8 +352,9 @@ tests/test_lab.py
 
 ## Next steps
 
-1. Replace the toy tokens with a real OAuth 2.1 authorization server and
-   the MCP authorization flow.
+1. Run the authorization server as its own service, with the OAuth 2.1
+   authorization flow, discovery and client registration that the MCP
+   authorization spec describes.
 2. Add content checks on what the agent publishes, to cover the misleading
    reply that access control cannot see.
 3. Model a realistic human approver who sometimes approves a harmful request.
@@ -366,7 +371,8 @@ project, not this one.
 ## References
 
 - OAuth 2.0 Security Best Current Practice (RFC 9700), Resource Indicators
-  (RFC 8707), Token Exchange (RFC 8693).
+  (RFC 8707), Token Exchange (RFC 8693), JWT Profile for OAuth 2.0 Access
+  Tokens (RFC 9068).
 - Model Context Protocol authorization specification.
 - NIST SP 800-207, Zero Trust Architecture.
 - OWASP Top 10 for Agentic Applications (2026): ASI03 Identity & Privilege

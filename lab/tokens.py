@@ -1,46 +1,57 @@
-"""Minimal signed access tokens and a toy authorization server.
+"""Access tokens and a small authorization server.
 
-This is a teaching model of OAuth-style access tokens, not a real OAuth
-implementation. It keeps only the properties the lab needs to reason about:
+Tokens are real JSON Web Tokens (JWTs) in the shape of the OAuth 2.0 JWT
+access token profile (RFC 9068):
 
-  sub    who the token acts for (the human user)
-  act    which agent is acting on the user's behalf
-  aud    the ONE server the token is meant for ("*" = any server, like a
-         personal access token)
-  scope  what the token may do
-  exp    when it stops working (None = never, like a personal access token)
-  kind   "oauth" (short-lived, audience-bound) or "pat" (personal token)
+  header   alg ES256, typ at+jwt, kid (which signing key)
+  iss      who issued the token (the authorization server)
+  sub      who the token acts for (the human user)
+  act      who is acting on the user's behalf (the agent), as in RFC 8693
+  aud      the ONE server the token is meant for
+  scope    what the token may do, space-separated
+  exp/iat  expiry and issue time
+  jti      a unique id for this token
 
-Tokens are HMAC-signed so servers can verify them without shared state.
-The signing key is hard-coded because everything here is a local mock.
+The authorization server signs with a private key. Tool servers verify with
+the matching public key, published as a JWKS. So a tool server can check
+tokens but cannot create them, which a shared signing secret would allow.
+
+What is still simplified: there is no login, consent screen, discovery
+endpoint or client registration. `AuthServer.grants` stands in for what the
+user approved. The "personal access token" is modelled as a token with a
+wildcard audience, every scope and no expiry, which no real issuer should
+produce; that is the point of that scenario.
 """
 
 from __future__ import annotations
 
-import base64
-import hashlib
-import hmac
-import json
 import time
+import uuid
 from dataclasses import dataclass, field
 
-_SIGNING_KEY = b"agent-authz-lab-local-only-key"
+import jwt
+from cryptography.hazmat.primitives.asymmetric import ec
+
+ISSUER = "https://auth.lab.example"
+ALGORITHM = "ES256"
+_KEY_ID = "lab-key-1"
+
+# The authorization server's key pair. Only mint() touches the private half.
+_PRIVATE_KEY = ec.generate_private_key(ec.SECP256R1())
+_PUBLIC_KEYS = {_KEY_ID: _PRIVATE_KEY.public_key()}
 
 
 class AuthError(Exception):
     """Raised when a token is invalid or does not permit the request."""
 
 
-def _b64(data: bytes) -> str:
-    return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
-
-
-def _unb64(text: str) -> bytes:
-    return base64.urlsafe_b64decode(text + "=" * (-len(text) % 4))
-
-
-def _sign(payload: bytes) -> str:
-    return _b64(hmac.new(_SIGNING_KEY, payload, hashlib.sha256).digest())
+def jwks() -> dict:
+    """The public keys tool servers use to verify tokens (a JSON Web Key Set)."""
+    keys = []
+    for key_id, public_key in _PUBLIC_KEYS.items():
+        jwk = jwt.algorithms.ECAlgorithm.to_jwk(public_key, as_dict=True)
+        keys.append({**jwk, "kid": key_id, "use": "sig", "alg": ALGORITHM})
+    return {"keys": keys}
 
 
 def mint(
@@ -52,32 +63,60 @@ def mint(
     ttl_seconds: int | None = 300,
     kind: str = "oauth",
 ) -> str:
-    """Create a signed token. ttl_seconds=None means it never expires."""
+    """Sign a token, as the authorization server. ttl_seconds=None means no expiry."""
+    now = int(time.time())
     claims = {
+        "iss": ISSUER,
         "sub": sub,
-        "act": act,
+        "act": {"sub": act},
+        "client_id": act,
         "aud": aud,
-        "scope": sorted(scope),
-        "exp": None if ttl_seconds is None else int(time.time()) + ttl_seconds,
-        "kind": kind,
+        "scope": " ".join(sorted(scope)),
+        "iat": now,
+        "jti": uuid.uuid4().hex,
+        "token_kind": kind,
     }
-    payload = json.dumps(claims, sort_keys=True).encode()
-    return f"{_b64(payload)}.{_sign(payload)}"
+    if ttl_seconds is not None:
+        claims["exp"] = now + ttl_seconds
+    return jwt.encode(
+        claims, _PRIVATE_KEY, algorithm=ALGORITHM, headers={"typ": "at+jwt", "kid": _KEY_ID}
+    )
 
 
 def verify(token: str) -> dict:
-    """Check signature and expiry; return the claims. Raises AuthError."""
+    """Check signature, issuer and expiry; return the claims. Raises AuthError.
+
+    The audience is deliberately NOT checked here. Each tool server decides
+    whether to check it, because skipping that check is one of the mistakes
+    the lab studies.
+    """
     try:
-        body, signature = token.split(".")
-        payload = _unb64(body)
-    except Exception as exc:  # malformed token
-        raise AuthError("malformed token") from exc
-    if not hmac.compare_digest(signature, _sign(payload)):
-        raise AuthError("bad signature")
-    claims = json.loads(payload)
-    if claims["exp"] is not None and claims["exp"] < time.time():
-        raise AuthError("token expired")
-    return claims
+        header = jwt.get_unverified_header(token)
+        public_key = _PUBLIC_KEYS.get(header.get("kid"))
+        if public_key is None:
+            raise AuthError("unknown signing key")
+        raw = jwt.decode(
+            token,
+            public_key,
+            algorithms=[ALGORITHM],  # never trust the token's own "alg"
+            issuer=ISSUER,
+            options={"verify_aud": False, "require": ["iss", "sub", "aud", "iat", "jti"]},
+        )
+    except jwt.ExpiredSignatureError as exc:
+        raise AuthError("token expired") from exc
+    except jwt.InvalidTokenError as exc:
+        raise AuthError(f"invalid token: {exc}") from exc
+
+    return {
+        "iss": raw["iss"],
+        "sub": raw["sub"],
+        "act": raw["act"]["sub"],
+        "aud": raw["aud"],
+        "scope": raw["scope"].split(),
+        "exp": raw.get("exp"),
+        "jti": raw["jti"],
+        "kind": raw.get("token_kind", "oauth"),
+    }
 
 
 def has_scope(claims: dict, required: str) -> bool:
@@ -86,11 +125,11 @@ def has_scope(claims: dict, required: str) -> bool:
 
 @dataclass
 class AuthServer:
-    """Toy authorization server.
+    """Authorization server for one user and one agent.
 
-    `grants` records what the user has approved for one agent, per server:
+    `grants` records what the user has approved for the agent, per server:
         {"issues": ["issues:read"], "notes": ["notes:read"]}
-    Tokens can only be minted or exchanged within those grants.
+    Tokens can only be issued or exchanged within those grants.
     """
 
     user: str
@@ -98,7 +137,7 @@ class AuthServer:
     grants: dict[str, list[str]] = field(default_factory=dict)
 
     def token_for(self, audience: str, ttl_seconds: int = 300) -> str:
-        """Mint an audience-bound token carrying exactly the granted scopes."""
+        """Issue an audience-bound token carrying exactly the granted scopes."""
         if audience not in self.grants:
             raise AuthError(f"no grant for audience '{audience}'")
         return mint(
@@ -110,9 +149,9 @@ class AuthServer:
         )
 
     def exchange(self, subject_token: str, audience: str, scope: list[str]) -> str:
-        """Token exchange (the RFC 8693 idea): trade a token for a narrower one
-        aimed at a different server. Refused unless the user granted every
-        requested scope for that audience.
+        """Token exchange (RFC 8693): trade a token for a narrower one aimed at
+        a different server. Refused unless the user granted every requested
+        scope for that audience.
         """
         claims = verify(subject_token)
         granted = self.grants.get(audience, [])

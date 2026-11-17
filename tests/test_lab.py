@@ -20,12 +20,93 @@ def _run(config: str, model):
 
 # --- tokens -----------------------------------------------------------------
 
-def test_token_roundtrip_and_tamper():
+def _b64(data: bytes) -> str:
+    import base64
+
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
+
+
+def _forge(header: dict, claims: dict, signature: bytes = b"") -> str:
+    """Hand-build a JWT, the way an attacker without the private key would."""
+    signing_input = _b64(json.dumps(header).encode()) + "." + _b64(json.dumps(claims).encode())
+    return signing_input + "." + _b64(signature)
+
+
+def _claims_of(token: str) -> dict:
+    import base64
+
+    body = token.split(".")[1]
+    return json.loads(base64.urlsafe_b64decode(body + "=" * (-len(body) % 4)))
+
+
+def test_token_roundtrip():
     token = mint(sub="u", act="a", aud="issues", scope=["issues:read"])
-    assert verify(token)["aud"] == "issues"
-    body, sig = token.split(".")
+    claims = verify(token)
+    assert (claims["sub"], claims["act"], claims["aud"]) == ("u", "a", "issues")
+    assert claims["scope"] == ["issues:read"] and claims["exp"] is not None
+
+
+def test_tampered_payload_rejected():
+    token = mint(sub="u", act="a", aud="issues", scope=["issues:read"])
+    header, _, signature = token.split(".")
+    widened = dict(_claims_of(token), scope="issues:read issues:write notes:read")
     with pytest.raises(AuthError):
-        verify(body + "." + sig[:-2] + "xx")
+        verify(header + "." + _b64(json.dumps(widened).encode()) + "." + signature)
+
+
+def test_unsigned_token_rejected():
+    """The classic 'alg: none' attack: claim no signature is needed."""
+    claims = _claims_of(mint(sub="u", act="a", aud="issues", scope=["*"]))
+    with pytest.raises(AuthError):
+        verify(_forge({"alg": "none", "typ": "at+jwt", "kid": "lab-key-1"}, claims))
+
+
+def test_algorithm_confusion_rejected():
+    """Sign with HMAC using the PUBLIC key as the secret, hoping the verifier
+    trusts the token's own 'alg' header."""
+    import hashlib
+    import hmac
+
+    from cryptography.hazmat.primitives import serialization
+
+    from lab.tokens import _PUBLIC_KEYS
+
+    public_pem = _PUBLIC_KEYS["lab-key-1"].public_bytes(
+        serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+    claims = _claims_of(mint(sub="u", act="a", aud="issues", scope=["*"]))
+    header = {"alg": "HS256", "typ": "at+jwt", "kid": "lab-key-1"}
+    unsigned = _forge(header, claims).rsplit(".", 1)[0]
+    signature = hmac.new(public_pem, unsigned.encode(), hashlib.sha256).digest()
+    with pytest.raises(AuthError):
+        verify(unsigned + "." + _b64(signature))
+
+
+def test_token_from_another_issuer_rejected():
+    """A token signed by a key the lab's authorization server does not own."""
+    import jwt
+    from cryptography.hazmat.primitives.asymmetric import ec
+
+    claims = _claims_of(mint(sub="u", act="a", aud="issues", scope=["*"]))
+    foreign_key = ec.generate_private_key(ec.SECP256R1())
+    forged = jwt.encode(claims, foreign_key, algorithm="ES256", headers={"kid": "lab-key-1"})
+    with pytest.raises(AuthError):
+        verify(forged)
+    unknown_kid = jwt.encode(claims, foreign_key, algorithm="ES256", headers={"kid": "other"})
+    with pytest.raises(AuthError):
+        verify(unknown_kid)
+
+
+def test_garbage_token_rejected():
+    with pytest.raises(AuthError):
+        verify("not-a-token")
+
+
+def test_tool_servers_only_need_public_keys():
+    from lab.tokens import jwks
+
+    (key,) = jwks()["keys"]
+    assert key["kty"] == "EC" and "d" not in key  # "d" would be the private part
 
 
 def test_expired_token_rejected():

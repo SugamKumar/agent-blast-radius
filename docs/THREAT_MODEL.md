@@ -22,7 +22,7 @@ the agent and the servers.
 | Ordinary private data | a normal note | `standard_note` canary |
 | Highly privileged data | a restricted note needing `notes:admin` | `restricted_note` canary |
 | Integrity of public records | the two original issues | closed or deleted state |
-| The user's delegated access | tokens held by the agent's tool client | signed tokens in `lab/tokens.py` |
+| The user's delegated access | tokens held by the agent's tool client | signed JWTs in `lab/tokens.py` |
 
 ## Trust boundaries
 
@@ -42,7 +42,8 @@ scripted compromised agent, so the answer depends only on the authorization
 design, not on any particular model's behaviour.
 
 The attacker cannot see or forge tokens and cannot change server
-configuration. They can only make the agent issue tool calls. Their goals
+configuration. Tokens are signed JWTs; the tests confirm that tampered,
+unsigned, algorithm-confusion and foreign-key tokens are rejected. They can only make the agent issue tool calls. Their goals
 are to publish private note contents (confidentiality) and to close or
 delete legitimate issues (integrity).
 

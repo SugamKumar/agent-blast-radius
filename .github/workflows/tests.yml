@@ -15,5 +15,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install pytest "mcp>=2,<3"
+      - run: pip install pytest "pyjwt[crypto]>=2.10" "mcp>=2,<3"
       - run: python -m pytest -q
