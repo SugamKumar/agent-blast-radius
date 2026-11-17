@@ -83,7 +83,10 @@ attacker's control. `prompt_defense_only` has the same blast radius as
   lab now fails closed when they are missing; the first version failed open
   and let a disguised leak through.
 - The secret-pattern rule (R6) is easy to evade by encoding the secret.
-- A human approver can be talked into approving a harmful request.
+- A human approver gets tired. Measured in `lab/approver.py`: where approval
+  is the only rule, a human who approves one unexpected request in ten
+  unread lets a five-prompt attack through about a quarter of the time. For
+  a misleading reply the human is the only control at all.
 - The hardened configuration supports only the task it was built for. Each
   additional job needs its own narrow grant.
 

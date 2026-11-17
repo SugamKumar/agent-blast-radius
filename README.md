@@ -280,6 +280,34 @@ refuses a non-read tool on any undeclared resource.
   control cannot judge whether a statement is true. That needs content
   controls, which is the territory of the insider-threat project.
 
+### 6. What human approval is worth when the human is tired
+
+`python -m lab.approver`. Results 1 to 5 use an approver who refuses
+everything or approves everything. This one always approves what the user
+asked for, and approves an unexpected request without reading it some of
+the time (approval fatigue). Share of 200 sessions in which the attacker did harm, by how often the human approves an unexpected request without reading it.
+
+| Attack | Gateway setup | Prompts shown per session | 0% | 10% | 25% | 50% | 100% |
+|---|---|---|---|---|---|---|---|
+| Loud: tries every route (triage task) | Approval rule only | 5 | 0% | 26% | 62% | 86% | 100% |
+| Loud: tries every route (triage task) | Full gateway | 0 | 0% | 0% | 0% | 0% | 0% |
+| Quiet: close the wrong issue | Approval rule only | 1 | 0% | 12% | 28% | 53% | 100% |
+| Quiet: close the wrong issue | Full gateway | 0 | 0% | 0% | 0% | 0% | 0% |
+| Quiet: post a misleading reply | Approval rule only | 1 | 0% | 12% | 28% | 53% | 100% |
+| Quiet: post a misleading reply | Full gateway | 1 | 0% | 12% | 28% | 53% | 100% |
+
+- **Every prompt is another chance for the attacker.** The loud attacker
+  triggers five prompts in one session, so a human who rubber-stamps one
+  unexpected request in ten lets the attack through about a quarter of the
+  time, and one in four lets it through more often than not.
+- **With the full gateway the human is never asked about the loud attack
+  or the wrong-issue close.** The allowlist and resource limits refuse them
+  first, so fatigue cannot matter. Controls that need no human should run
+  before the ones that do.
+- **For the misleading reply, the human is the only control.** Nothing
+  else in the gateway can judge content, so that attack succeeds exactly as
+  often as the human stops reading.
+
 ## Quick start
 
 Requires Python 3.10+. The packages are PyJWT with `cryptography` for the
@@ -287,12 +315,13 @@ tokens, the `mcp` SDK (2.x) for the MCP transport, and `pytest`.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest -q                                    # 32 offline tests
+python -m pytest -q                                    # 33 offline tests
 python -m lab.run --model compromised                  # blast radius
 python -m lab.detect results/compromised_audit.jsonl   # alerts + rule matrix
 python -m lab.ablation                                 # one fix at a time + cost of defences
 python -m lab.score                                    # detection precision and recall
 python -m lab.evasion                                  # quiet attackers vs. two policy versions
+python -m lab.approver                                 # human approval under fatigue
 ```
 
 Through real MCP servers (same results, every hop is an authenticated HTTP
@@ -321,6 +350,7 @@ lab/
   ablation.py      one-fix-at-a-time and cost-of-defences experiments
   score.py         detection scoring on labelled attack and normal sessions
   evasion.py       quiet attackers that use only the task's own tools
+  approver.py      human approval modelled with approval fatigue
   detections/      eight detection rules over the audit log
   detect.py        runs the rules, prints the rule matrix
 docs/THREAT_MODEL.md
@@ -347,8 +377,9 @@ tests/test_lab.py
   header. That is deliberately the bug: a header is not proof of identity.
 - Two attacker goals, two servers, six legitimate tasks, two attack orders,
   three quiet attacks. Results should not be generalised beyond that.
-- With a human approving every request, security depends on that human. The
-  lab models an approver who always says yes or always says no.
+- The fatigued approver is a simple model: a fixed chance of approving an
+  unexpected request unread, the same for every request. Real fatigue grows
+  with the number of prompts and varies with how alarming a request looks.
 
 ## Next steps
 
@@ -357,8 +388,7 @@ tests/test_lab.py
    authorization spec describes.
 2. Add content checks on what the agent publishes, to cover the misleading
    reply that access control cannot see.
-3. Model a realistic human approver who sometimes approves a harmful request.
-4. Add a third server and multi-hop delegation, to study longer trust chains.
+3. Add a third server and multi-hop delegation, to study longer trust chains.
 
 ## Optional: driving the lab with a real model
 

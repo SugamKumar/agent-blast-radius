@@ -335,3 +335,29 @@ def test_quiet_attacks_before_and_after_resource_policy_fix():
     # outside what access telemetry can see. This stays undetected.
     v2 = run_attack("misleading_reply", "v2")
     assert v2["harm_done_undetected"] == v2["harm_done"] > 0
+
+
+# --- imperfect human approver -----------------------------------------------------
+
+def test_fatigued_approver():
+    from lab.approver import ATTACKS, SETUPS, run_cell
+
+    loud, wrong_issue, misleading = ATTACKS
+    approval_only, full = SETUPS["Approval rule only"], SETUPS["Full gateway"]
+
+    # A human who reads everything stops all three; one who reads nothing stops none.
+    for attack in ATTACKS:
+        assert run_cell(attack, approval_only, 0.0, 20)["harm_rate"] == 0.0
+        assert run_cell(attack, approval_only, 1.0, 20)["harm_rate"] == 1.0
+
+    # More prompts, more chances: the loud attack beats the single-prompt one.
+    assert (run_cell(loud, approval_only, 0.25, 200)["harm_rate"]
+            > run_cell(wrong_issue, approval_only, 0.25, 200)["harm_rate"])
+
+    # The full gateway never shows the human these two, so fatigue is irrelevant.
+    for attack in (loud, wrong_issue):
+        cell = run_cell(attack, full, 1.0, 20)
+        assert cell["harm_rate"] == 0.0 and cell["prompts_per_session"] == 0
+
+    # Content is only ever judged by the human.
+    assert run_cell(misleading, full, 1.0, 20)["harm_rate"] == 1.0
