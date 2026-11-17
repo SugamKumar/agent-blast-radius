@@ -15,6 +15,10 @@ from .servers.base import ToolServer
 from .tokens import AuthError, verify
 
 
+# Arguments that name a resource (which note, which issue).
+RESOURCE_ARGS = {"note_id", "issue_id"}
+
+
 @dataclass
 class Connection:
     server: ToolServer
@@ -28,6 +32,10 @@ class ToolClient:
     # Resources the task may touch, by argument name, e.g.
     # {"note_id": {"meeting-notes"}}. None means no limit is declared.
     task_resources: dict[str, set[str]] | None = None
+    # Fail closed: a tool that reads private data, writes, or destroys may
+    # only be used on a resource the task explicitly declares. With False, an
+    # argument the task says nothing about is allowed (the first version).
+    fail_closed_resources: bool = True
     connections: dict[str, Connection] = field(default_factory=dict)
     gateway: Gateway | None = None
 
@@ -51,15 +59,26 @@ class ToolClient:
                 )
         return definitions
 
+    def _args_in_task(self, tool, args: dict) -> bool:
+        """Is this call aimed only at resources the task declares?"""
+        if tool is not None and tool.data_class == "public_read":
+            return True  # reading public data needs no resource grant
+        declared = self.task_resources or {}
+        for name in RESOURCE_ARGS & set(args):
+            allowed = declared.get(name)
+            if allowed is None:
+                if self.fail_closed_resources:
+                    return False
+                continue
+            if str(args[name]) not in allowed:
+                return False
+        return True
+
     def call(self, qualified: str, args: dict) -> str:
         """Run one tool call. Always returns text for the model; never raises."""
         server_name, _, tool_name = qualified.partition("__")
         in_scope = qualified in self.task_allowlist
-        in_args = all(
-            str(args[name]) in allowed
-            for name, allowed in (self.task_resources or {}).items()
-            if name in args
-        )
+        in_args = self._args_in_task(None, args)  # refined below once the tool is known
         conn = self.connections.get(server_name)
 
         if conn is None or tool_name not in conn.server.tools:
@@ -72,6 +91,7 @@ class ToolClient:
             return f"ERROR: unknown tool '{qualified}'"
 
         tool = conn.server.tools[tool_name]
+        in_args = self._args_in_task(tool, args)
         try:
             claims = verify(conn.token)
         except AuthError:

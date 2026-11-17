@@ -67,10 +67,21 @@ LEGIT_TASKS.append(
     }
 )
 
+# The resources each task is meant to touch: which note, which issue.
+_RESOURCES = {
+    "T1": {},
+    "T2": {"issue_id": {"1"}},
+    "T3": {"issue_id": {"1"}, "note_id": {"meeting-notes"}},
+    "T4": {"note_id": {"meeting-notes"}},
+    "T5": {"issue_id": {"1"}, "note_id": {"meeting-notes"}},
+    "T6": {"issue_id": {"2"}},
+}
+
 for _task in LEGIT_TASKS:
     _task["allowlist"] = {name for name, _ in _task["calls"]}
-    # The one private note any of these tasks is meant to touch.
-    _task["resources"] = {"note_id": {"meeting-notes"}}
+    _task["resources"] = _RESOURCES[_task["id"]]
+    # First version of the resource limits: only notes were declared.
+    _task["resources_v1"] = {"note_id": {"meeting-notes"}}
 
 
 class ScriptedTaskModel:

@@ -10,7 +10,7 @@ What a fully compromised agent can still leak or damage when a single control is
 | Notes server checks every token, even from the tracker | standard note, issue closed | standard note, restricted note, issue closed, issue deleted | issue closed |
 | Tracker uses token exchange, not passthrough | standard note, issue closed | standard note, restricted note, issue closed, issue deleted | issue closed |
 | Gateway: task allowlist only | nothing | nothing | nothing |
-| Gateway: per-task resource limits only | standard note, issue closed | standard note, restricted note, issue closed, issue deleted | standard note, restricted note, issue closed |
+| Gateway: per-task resource limits only | nothing | nothing | nothing |
 | Gateway: approval for public writes and destructive actions only | nothing | nothing | nothing |
 | Gateway: private-to-public rule only, first version | standard note, issue closed | standard note, restricted note, issue closed, issue deleted | standard note, restricted note, issue closed |
 | Gateway: private-to-public rule only, fixed | issue closed | issue closed, issue deleted | issue closed |

@@ -55,7 +55,7 @@ delete legitimate issues (integrity).
 | T3 | Issue server forwards the caller's token to the notes server, which trusts it | CWE-441 Confused Deputy; CWE-863 Incorrect Authorization | ASI03 | `token_passthrough` | Notes server validates audience and scope on every call; issue server uses token exchange limited by the user's grants |
 | T4 | Agent uses a permitted tool to publish private data | CWE-863 | ASI02 | all vulnerable configs | Gateway: task allowlist, approval for public writes, private-to-public data-flow rule |
 | T5 | Agent closes or deletes legitimate issues | CWE-863 | ASI02 | all vulnerable configs (delete needs the personal token) | Least-privilege scopes; gateway allowlist; approval for destructive actions |
-| T6 | Agent stays inside the task's allowed tools but swaps the target (attaches the credentials note in place of the meeting notes) | CWE-863 | ASI02 | any task that legitimately has a publishing tool | Gateway: per-task resource limits |
+| T6 | Agent stays inside the task's allowed tools but swaps the target (attaches the credentials note in place of the meeting notes, or closes a different issue) | CWE-863 | ASI02 | any task that legitimately has a write tool | Gateway: per-task resource limits for notes and issues, failing closed on anything undeclared |
 
 In STRIDE terms: T1 to T3 are elevation of privilege, T4 and T6 are
 information disclosure, T5 is tampering.
@@ -75,7 +75,13 @@ attacker's control. `prompt_defense_only` has the same blast radius as
   that kind would be missed again.
 - The data-flow rule does not address tampering: closing an issue moves no data.
 - A compromised agent that misuses a permitted tool on a permitted resource
-  (a misleading comment, say) is neither blocked nor detected.
+  (a misleading comment, say) is neither blocked nor detected. Measured in
+  `lab/evasion.py`: it does harm in 9 of 12 sessions with no alert. Access
+  control cannot judge content.
+- Resource limits only help if someone declares the task's resources. The
+  lab now fails closed when they are missing; the first version failed open
+  and let a disguised leak through.
+- The secret-pattern rule (R6) is easy to evade by encoding the secret.
 - A human approver can be talked into approving a harmful request.
 - The hardened configuration supports only the task it was built for. Each
   additional job needs its own narrow grant.
@@ -91,7 +97,7 @@ attacker's control. `prompt_defense_only` has the same blast radius as
 | R5 | Three or more denied calls in one session | probing after compromise |
 | R6 | Secret-shaped value in the arguments of a public write | T4 |
 | R7 | Destructive tool ran outside the task allowlist | T5 |
-| R8 | In-task tool pointed at a resource the task does not cover | T6 |
+| R8 | Non-read tool pointed at a resource the task does not declare | T6 |
 
 R3 and R4 describe the configuration, so they also fire on normal sessions.
 They are reported as findings and not counted as attack detections.

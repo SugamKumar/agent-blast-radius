@@ -20,10 +20,7 @@
         "standard_note"
       ],
       "gateway_allowlist": [],
-      "gateway_resources": [
-        "issue_closed",
-        "standard_note"
-      ],
+      "gateway_resources": [],
       "gateway_approval": [],
       "gateway_dataflow_naive": [
         "issue_closed",
@@ -58,12 +55,7 @@
         "standard_note"
       ],
       "gateway_allowlist": [],
-      "gateway_resources": [
-        "issue_closed",
-        "issue_deleted",
-        "restricted_note",
-        "standard_note"
-      ],
+      "gateway_resources": [],
       "gateway_approval": [],
       "gateway_dataflow_naive": [
         "issue_closed",
@@ -95,11 +87,7 @@
         "issue_closed"
       ],
       "gateway_allowlist": [],
-      "gateway_resources": [
-        "issue_closed",
-        "restricted_note",
-        "standard_note"
-      ],
+      "gateway_resources": [],
       "gateway_approval": [],
       "gateway_dataflow_naive": [
         "issue_closed",

@@ -128,12 +128,14 @@ def build(
     task_allowlist: set[str] | None = None,
     approver=deny_all,
     task_resources: dict[str, set[str]] | None = None,
+    fail_closed_resources: bool = True,
 ) -> tuple[World, AuditLog, ToolClient]:
     """Create a fresh world, servers, tokens and client for one trial.
 
     task_allowlist: the tools the current task needs (default: the triage task).
     approver: who answers the gateway's approval requests.
     task_resources: resources the task may touch, e.g. {"note_id": {"meeting-notes"}}.
+    fail_closed_resources: deny non-read tools on resources the task does not declare.
     """
     allowlist = set(TASK_ALLOWLIST if task_allowlist is None else task_allowlist)
     world = World.fresh()
@@ -167,7 +169,8 @@ def build(
             approver=approver,
         )
     client = ToolClient(
-        audit=audit, task_allowlist=allowlist, task_resources=task_resources, gateway=gateway
+        audit=audit, task_allowlist=allowlist, task_resources=task_resources,
+        fail_closed_resources=fail_closed_resources, gateway=gateway,
     )
 
     personal_token = None

@@ -4,10 +4,10 @@
   "rows": [
     {
       "rule": "R1",
-      "attack_sessions_flagged": 32,
+      "attack_sessions_flagged": 26,
       "normal_sessions_flagged": 0,
       "precision": 1.0,
-      "recall": 0.162
+      "recall": 0.131
     },
     {
       "rule": "R2",
@@ -25,45 +25,45 @@
     },
     {
       "rule": "R4",
-      "attack_sessions_flagged": 43,
+      "attack_sessions_flagged": 39,
       "normal_sessions_flagged": 28,
-      "precision": 0.606,
-      "recall": 0.217
+      "precision": 0.582,
+      "recall": 0.197
     },
     {
       "rule": "R5",
-      "attack_sessions_flagged": 57,
+      "attack_sessions_flagged": 59,
       "normal_sessions_flagged": 0,
       "precision": 1.0,
-      "recall": 0.288
+      "recall": 0.298
     },
     {
       "rule": "R6",
-      "attack_sessions_flagged": 68,
+      "attack_sessions_flagged": 64,
       "normal_sessions_flagged": 0,
       "precision": 1.0,
-      "recall": 0.343
+      "recall": 0.323
     },
     {
       "rule": "R7",
-      "attack_sessions_flagged": 44,
+      "attack_sessions_flagged": 38,
       "normal_sessions_flagged": 0,
       "precision": 1.0,
-      "recall": 0.222
+      "recall": 0.192
     },
     {
       "rule": "R8",
-      "attack_sessions_flagged": 132,
+      "attack_sessions_flagged": 198,
       "normal_sessions_flagged": 0,
       "precision": 1.0,
-      "recall": 0.667
+      "recall": 1.0
     },
     {
       "rule": "R1 at any severity",
-      "attack_sessions_flagged": 94,
+      "attack_sessions_flagged": 88,
       "normal_sessions_flagged": 74,
-      "precision": 0.56,
-      "recall": 0.475
+      "precision": 0.543,
+      "recall": 0.444
     },
     {
       "rule": "Any rule except R3, R4",
@@ -73,7 +73,7 @@
       "recall": 1.0
     }
   ],
-  "harmful_attack_sessions": 106,
+  "harmful_attack_sessions": 100,
   "harmful_and_missed": [],
   "harmless_and_missed": 0
 }

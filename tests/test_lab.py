@@ -234,3 +234,23 @@ def test_resource_limits_stop_in_task_note_swap():
     unprotected = _session(SCENARIOS["overbroad_scope"], compromised, "t",
                            allowlist=compromised.allowlist, resources=compromised.resources)
     assert unprotected["harm"] == ["standard_note"] and "R8" in unprotected["fired"]
+
+
+# --- quiet attackers ------------------------------------------------------------
+
+def test_quiet_attacks_before_and_after_resource_policy_fix():
+    from lab.evasion import run_attack
+
+    # First policy version: every quiet attack does harm without any alert.
+    for name in ("wrong_issue_close", "misleading_reply", "disguised_note_leak"):
+        v1 = run_attack(name, "v1")
+        assert v1["harm_done"] > 0 and v1["harm_done_undetected"] == v1["harm_done"], name
+
+    # Fail-closed resource limits expose the two that misuse a resource.
+    assert run_attack("wrong_issue_close", "v2")["harm_done_undetected"] == 0
+    assert run_attack("disguised_note_leak", "v2")["harm_done_undetected"] == 0
+
+    # A false statement posted with a permitted tool on a permitted issue is
+    # outside what access telemetry can see. This stays undetected.
+    v2 = run_attack("misleading_reply", "v2")
+    assert v2["harm_done_undetected"] == v2["harm_done"] > 0
